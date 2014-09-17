@@ -47,11 +47,31 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     
     [self.tableView registerNib:[UINib
                                  nibWithNibName:@"MovieCell" bundle:nil] forCellReuseIdentifier:@"MovieCell"];
+    [self networkHandler];
+    self.refreshControl = [[UIRefreshControl alloc]init];
+
+//    refreshControl.attributedTitle = [[[NSAttributedString alloc]init] initWithString:@"Pull to refresh"];
+    [self.refreshControl addTarget:self action:@selector(refreshView:) forControlEvents:UIControlEventValueChanged];
+    [self.tableView addSubview:self.refreshControl];
+
+    //self.tableView = refresh;
+//    self.title = @"Rotten Tomatoes";
+    
    
+    // Do any additional setup after loading the view from its nib.
+}
+- (void)scrollViewDidEndDecelerating:(UIScrollView*)scrollView
+{
+//    if( self.refresh.isRefreshing )
+  //      [self refreshView:refresh()];
+}
+
+-(void) networkHandler
+{
     NSString *url = @"http://api.rottentomatoes.com/api/public/v1.0/lists/movies/box_office.json?apikey=dagqdghwaq3e3mxyrp7kmmj5&limit=20&country=us";
     
     NSURLRequest *request = [[NSURLRequest alloc] initWithURL:[NSURL URLWithString:url]];
-
+    
     /***SHOW PROGRESS BAR ***/
     AMTumblrHud *tumblrHUD = [[AMTumblrHud alloc] initWithFrame:CGRectMake((CGFloat) ((self.view.frame.size.width - 55) * 0.5),
                                                                            (CGFloat) ((self.view.frame.size.height - 20) * 0.5), 55,20)];
@@ -61,46 +81,52 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     /*====================*/
     
     [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:
-^(NSURLResponse *response, NSData *data, NSError *error) {
-    //Hide the loading view
-  if ([data length] > 0 && error == nil)
-    {
-        [tumblrHUD setHidden:YES];
-        NSDictionary *object = [NSJSONSerialization JSONObjectWithData:data options:nil error:nil];
-        self.movies = object[@"movies"];
-        [self.tableView reloadData];
-    }
-    
-    else if ([data length] == 0 && error == nil)
-    {
-        [tumblrHUD setHidden:YES];
-        NSLog(@"timestamped");
-    }
-    else if (error != nil)
-    {
-  //      [delegate timedOut];
-        NSLog(@"Timeout happened %@",error);
-        [tumblrHUD setHidden:YES];
-        NSString *label = @"Hello";
-        UILabel *err = [[UILabel alloc] initWithFrame:CGRectMake(10, 10, 300, 20)];
-        [err setTextColor:[UIColor blackColor]];
-        [err setBackgroundColor:[UIColor clearColor]];
-        [err setFont:[UIFont fontWithName: @"Trebuchet MS" size: 14.0f]];
-        [self.tableView addSubview:err];
-         err.text = @"Network Error";
-        //Handle these cases
-        //httpStatusCodes >= 400
-        //timeout
-        //ClientAbort
-        
-    }
-    
-  
-}];
-    // Do any additional setup after loading the view from its nib.
+     ^(NSURLResponse *response, NSData *data, NSError *error) {
+         //Hide the loading view
+         if ([data length] > 0 && error == nil)
+         {
+             [tumblrHUD setHidden:YES];
+             NSDictionary *object = [NSJSONSerialization JSONObjectWithData:data options:nil error:nil];
+             self.movies = object[@"movies"];
+             [self.tableView reloadData];
+         }
+         
+         else if ([data length] == 0 && error == nil)
+         {
+             [tumblrHUD setHidden:YES];
+             NSLog(@"timestamped");
+         }
+         else if (error != nil)
+         {
+             //      [delegate timedOut];
+             NSLog(@"Timeout happened %@",error);
+             [tumblrHUD setHidden:YES];
+             NSString *label = @"Hello";
+             UILabel *err = [[UILabel alloc] initWithFrame:CGRectMake(10, 10, 300, 20)];
+             [err setTextColor:[UIColor blackColor]];
+             [err setBackgroundColor:[UIColor clearColor]];
+             [err setFont:[UIFont fontWithName: @"Trebuchet MS" size: 14.0f]];
+             [self.tableView addSubview:err];
+             err.text = @"Network Error";
+             //Handle these cases
+             //httpStatusCodes >= 400
+             //timeout
+             //ClientAbort
+             
+         }
+         
+         
+     }];
 }
 
 -(void) refreshView : (UIRefreshControl *) refresh {
+    refresh.attributedTitle = [[NSAttributedString alloc] initWithString:@"Refreshing.."];
+    [self networkHandler];
+    NSDateFormatter * formatter = [[NSDateFormatter alloc] init];
+    [formatter setDateFormat:@"MMM d,hh:mm a"];
+    NSString *lastUpdated = [NSString stringWithFormat:@"Last Updated on %@",[formatter stringFromDate:[NSDate date]]];
+    refresh.attributedTitle = [[NSAttributedString alloc] initWithString:lastUpdated];
+    [refresh endRefreshing];
     
 }
 

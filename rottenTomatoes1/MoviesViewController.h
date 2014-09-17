@@ -11,6 +11,8 @@
 @interface MoviesViewController : UIViewController<UITableViewDelegate,UITableViewDataSource>
 @property (weak, nonatomic) IBOutlet UIView *networkError;
 @property (weak, nonatomic) IBOutlet UILabel *errorLabel;
+@property UIRefreshControl *refreshControl;
 -(void) refreshView : (UIRefreshControl *) refresh;
+-(void) networkHandler;
 
 @end
