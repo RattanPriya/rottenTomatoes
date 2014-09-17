@@ -9,5 +9,8 @@
 #import <UIKit/UIKit.h>
 
 @interface MoviesViewController : UIViewController<UITableViewDelegate,UITableViewDataSource>
+@property (weak, nonatomic) IBOutlet UIView *networkError;
+@property (weak, nonatomic) IBOutlet UILabel *errorLabel;
+-(void) refreshView : (UIRefreshControl *) refresh;
 
 @end
