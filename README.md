@@ -15,3 +15,7 @@ Requirements of this app:
 <li>Add a tab bar for Box Office and DVD. (optional)</li>
 <li>Add a search bar. (optional)
 </ul>
+
+Number of hours spent :5-6 hours.
+
+![alt tag](https://github.com/RattanPriya/rottenTomatoes/blob/master/X3clJMqlmJ.gif)
