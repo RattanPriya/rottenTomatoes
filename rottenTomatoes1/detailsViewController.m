@@ -7,7 +7,7 @@
 //
 
 #import "detailsViewController.h"
-
+#import "UIImageView+AFNetworking.h"
 @interface detailsViewController ()
 
 @end
@@ -28,7 +28,11 @@
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     NSString *title = [defaults objectForKey:@"title"];
     NSString *synopsis = [defaults objectForKey:@"synopsis"];
+    NSString *detailUrl = [defaults objectForKey:@"imageUrl"];
+    NSLog(@"%image url>>>>>>>>>>>>>",detailUrl);
+    [self.detailsImage setImageWithURL:[NSURL URLWithString:detailUrl]];
     NSLog(@"title %@",title);
+   // NSLog(@"title %@",);
     NSLog(@"title %@",synopsis);
     
     

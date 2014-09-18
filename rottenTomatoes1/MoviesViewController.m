@@ -37,6 +37,8 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+     self.errorLabel.hidden=YES;
+
     [self.tableView registerNib:[UINib nibWithNibName:@"EXCustomCell"
                                                bundle:[NSBundle mainBundle]]
          forCellReuseIdentifier:@"CustomCellReuseID"];
@@ -85,9 +87,11 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
          //Hide the loading view
          if ([data length] > 0 && error == nil)
          {
+             self.errorLabel.hidden= YES;
              [tumblrHUD setHidden:YES];
              NSDictionary *object = [NSJSONSerialization JSONObjectWithData:data options:nil error:nil];
              self.movies = object[@"movies"];
+            
              [self.tableView reloadData];
          }
          
@@ -101,17 +105,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
              //      [delegate timedOut];
              NSLog(@"Timeout happened %@",error);
              [tumblrHUD setHidden:YES];
-             NSString *label = @"Hello";
-             UILabel *err = [[UILabel alloc] initWithFrame:CGRectMake(10, 10, 300, 20)];
-             [err setTextColor:[UIColor blackColor]];
-             [err setBackgroundColor:[UIColor clearColor]];
-             [err setFont:[UIFont fontWithName: @"Trebuchet MS" size: 14.0f]];
-             [self.tableView addSubview:err];
-             err.text = @"Network Error";
-             //Handle these cases
-             //httpStatusCodes >= 400
-             //timeout
-             //ClientAbort
+             self.errorLabel.hidden= NO;
              
          }
          
@@ -146,7 +140,9 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
     MovieCell *cell = [tableView dequeueReusableCellWithIdentifier:@"MovieCell"];
     cell.titleLabel.text = movie[@"title"];
     cell.synopsisLabel.text = movie[@"synopsis"];
+    NSLog(@"%@",movie);
     NSString *posterUrl = [movie valueForKeyPath:@"posters.thumbnail"];
+  
     [cell.posterView  setImageWithURL:[NSURL URLWithString:posterUrl]];
     return cell;
 }
@@ -154,13 +150,18 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath  {
     //NSLog(@"tapped this one %ld",indexPath.row);
     [self.navigationController pushViewController:[[detailsViewController alloc] init] animated:YES];
+
     NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
     NSDictionary *movie = self.movies[indexPath.row];
     NSString *title = movie[@"title"];
     NSString *synopsis = movie[@"synopsis"];
+    NSString *imageUrl = [movie valueForKeyPath:@"posters.profile"];
+    imageUrl = [imageUrl stringByReplacingOccurrencesOfString:@"tmb"
+                                                     withString:@"org"];
     [userDefaults setObject:title forKey:@"title"];
     [userDefaults setObject:synopsis forKey:@"synopsis"];
-    //[userDefaults setObject:title forKey:@"title"];
+    [userDefaults setObject:imageUrl forKey:@"imageUrl"];
+    
     [userDefaults synchronize];
     
     

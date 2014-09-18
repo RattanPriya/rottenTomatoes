@@ -10,7 +10,8 @@
 
 @interface detailsViewController : UIViewController
 
-@property (weak, nonatomic) IBOutlet UILabel *detailsTitle;
+
 @property (weak, nonatomic) IBOutlet UILabel *detailsDescription;
 @property (weak, nonatomic) IBOutlet UIImageView *detailsImage;
+@property (weak, nonatomic) IBOutlet UILabel *detailsTitle;
 @end
